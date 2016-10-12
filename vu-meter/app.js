@@ -50,7 +50,7 @@ m0
 .map(ascale)
 .forEach(function (e, i) {
     l1.push(['g', { transform: 'rotate(' + e + ')' },
-        ['path', { d: 'M0 -360,v-20', stroke: '#000', 'stroke-width': 2 }],
+        ['path', { d: 'M0 -360v-20', stroke: '#000', 'stroke-width': 2 }],
         ['text', { y: -390, 'font-size': 20 }, Math.abs(m0[i])]
     ]);
 });
@@ -62,7 +62,7 @@ r0
 .map(ascale)
 .forEach(function (e, i) {
     l1.push(['g', { transform: 'rotate(' + e + ')' },
-        ['path', { d: 'M0 -360,v-20', stroke: 'red', 'stroke-width': 2 }],
+        ['path', { d: 'M0 -360v-20', stroke: 'red', 'stroke-width': 2 }],
         ['text', { y: -390, 'font-size': 20, fill: 'red'}, r0[i]]
     ]);
 });
@@ -72,7 +72,7 @@ r0
 .map(ascale)
 .forEach(function (e) {
     l1.push(['g', { transform: 'rotate(' + e + ')'},
-        ['path', { d: 'M0 -360,v-15', stroke: '#000', 'stroke-width': 1 }]
+        ['path', { d: 'M0 -360v-15', stroke: '#000', 'stroke-width': 1 }]
     ]);
 });
 
@@ -81,7 +81,7 @@ r0
 .map(ascale)
 .forEach(function (e) {
     l1.push(['g', { transform: 'rotate(' + e + ')'},
-        ['path', { d: 'M0 -360,v-15', stroke: 'red', 'stroke-width': 1 }]
+        ['path', { d: 'M0 -360v-15', stroke: 'red', 'stroke-width': 1 }]
     ]);
 });
 
@@ -93,7 +93,7 @@ mm0
 .forEach(function (e, i) {
     l1.push(['g', { transform: 'rotate(' + e + ')'},
         ['path', {
-            d: 'M0 -350,v0',
+            d: 'M0 -350v0',
             stroke: '#000',
             'stroke-width': 6,
             'stroke-linecap': 'round'
@@ -107,7 +107,7 @@ mm0
 .forEach(function (e) {
     l1.push(['g', { transform: 'rotate(' + e + ')'},
         ['path', {
-            d: 'M0 -350,v0',
+            d: 'M0 -350v0',
             stroke: '#000',
             'stroke-width': 4,
             'stroke-linecap': 'round'
@@ -125,23 +125,16 @@ l1.push(['g', {},
     }],
 ]);
 
-// needle
-l1.push(['g',
-    {
-        id: 'vu-needle',
-        transform: 'rotate(' + (-30) + ')'
-    },
-    ['path', {
-        d: 'M0 -200v-180',
-        stroke: '#5AF',
-        'stroke-opacity': 0.2,
-        'stroke-width': 4
-    }],
-    ['path', {
-        d: 'M0 -200v-180',
-        stroke: '#000',
-        'stroke-width': 2
-    }]
+// VU needle
+l1.push(['g', { id: 'vu-needle', transform: 'rotate(-30)' },
+    ['path', { d: 'M0 -200v-180', stroke: '#5AF',
+        'stroke-opacity': 0.2, 'stroke-width': 4 }],
+    ['path', { d: 'M0 -200v-180', stroke: '#000', 'stroke-width': 2 }]
+]);
+
+// max needle
+l1.push(['g', { id: 'max-needle', transform: 'rotate(-30)' },
+    ['path', { d: 'M0 -300v-80', stroke: '#300', 'stroke-width': 3 }]
 ]);
 
 var svg = ['svg', {
@@ -7163,24 +7156,46 @@ function newPID (kp, ki, kd) { // PID regulator
     };
 }
 
+function newPPM (k) {
+    var prev = 0;
+    return function (cur) {
+        if (cur > (k * prev)) {
+            prev = cur;
+            return cur;
+        }
+        prev = k * prev;
+        return prev;
+    };
+}
+
 function rectifier (arr, len) { // RMS
     var i, res = 0;
     for (i = 0; i < len; i++) {
         res += Math.abs(arr[i]);
     }
-    return Math.sqrt(res / len);
+    return res / len;
+}
+
+function max (arr, len) { // max
+    var i, res = 0;
+    for (i = 0; i < len; i++) {
+        res = Math.max(Math.abs(arr[i]), res);
+    }
+    return res;
 }
 
 function level (meter) {
     var ku = 0.3;
-    var pid = newPID(0.4 * ku, 2 * ku, ku / 8);
+    var vuPID = newPID(0.4 * ku, 2 * ku, ku / 8);
+    var maxPID = newPPM(0.96);
     return function (event) {
         var inp = event.inputBuffer;
         var inpData = inp.getChannelData(0);
         var x1 = rectifier(inpData, inp.length);
-        var x2 = pid(x1);
-        console.log(x1, x2);
-        meter.render(x2);
+        var vuVal = vuPID(x1);
+        var maxVal = maxPID(max(inpData, inp.length));
+        console.log(vuVal, maxVal);
+        meter.render(vuVal, maxVal / 2);
     };
 }
 
@@ -7215,10 +7230,11 @@ var newButton = function (button, backlit) {
     };
 };
 
-var newNeedle = function (el) {
+var newNeedle = function (vuEl, maxEl) {
     return {
-        render: function (val) {
-            el.setAttribute('transform', 'rotate(' + (val * 60 - 30) + ')');
+        render: function (vu, max) {
+            vuEl.setAttribute('transform', 'rotate(' + (vu * 60 - 30) + ')');
+            maxEl.setAttribute('transform', 'rotate(' + (max * 60 - 30) + ')');
         }
     };
 };
@@ -7228,12 +7244,8 @@ var div = document.createElement('div');
 div.innerHTML = onml.stringify(genSVG);
 content.appendChild(div);
 
-var vuButton = newButton(
-    document.getElementById('vu-button'),
-    document.getElementById('vu-backlit')
-);
-
-var vuNeedle = newNeedle(document.getElementById('vu-needle'));
+var vuButton = newButton(document.getElementById('vu-button'), document.getElementById('vu-backlit'));
+var vuNeedle = newNeedle(document.getElementById('vu-needle'), document.getElementById('max-needle'));
 
 function step1 (stream) {
     console.log(stream);
