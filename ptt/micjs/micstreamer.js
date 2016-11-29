@@ -1573,7 +1573,7 @@ exports.AudioClient = AudioClient;
 
 
 (function(window) {
-  var client = new AudioClient('ws://10.1.10.111:8008');
+  var client = new AudioClient('ws://verbumware.org:8008');
   //var client = new AudioClient('ws://127.0.0.1:8008');
   //websocket.onmessage = function (message) {
   //    console.log(message.data);
