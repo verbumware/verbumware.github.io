@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en" >
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <title>Verbumware Inc.</title>
+    <style>
+    html, body, .container {
+        height: 100%;
+        margin:0;
+        padding:0;
+        overflow: hidden;
+    }
+    .container {
+        background-color: #eee;
+        position:relative;
+    }
+    .control {
+        background-color: #123;
+        position: absolute;
+        height: 30vh;
+        width: 100%;
+    }
+    .report {
+        position: absolute;
+        bottom: 5vw;
+        left: 5vw;
+        height: calc(70vh - 10vw);
+        width: 90vw;
+        overflow: auto;
+    }
+    .treport {
+        position: relative;
+        font-size: 5vw;
+        font-family: 'Open Sans', sans-serif;
+    }
+    .logo svg {
+        position: absolute;
+        height: 20vh;
+        top: 15vh;
+        left: 50%;
+        margin-right: -50%;
+        transform: translate(-50%, -50%);
+    }
+    @media screen and (orientation:landscape) {
+        .control {
+            left: 0;
+            width: 30vw;
+            height: 100%
+        }
+        .report {
+            left: calc(30vw + 5vh);
+            bottom: 5vh;
+            width: calc(70vw - 10vh);
+            height: 90vh;
+        }
+        .treport {
+            font-size: 5vh;
+        }
+        .logo svg {
+            height: 20vw;
+            top: 50%
+        }
+    }
+    </style>
+  </head>
+  <body>
+
+  <div class="container">
+  <span class="control">
+    <span class="logo">
+      <div id="content" class="logo" onClick="window.toggleRecording()"></div>
+<!--      <svg id="button" onClick="window.toggleRecording()" xmlns="http://www.w3.org/2000/svg" width="181" height="209" viewBox="0 0 181 209"><path d="M0 157l90.067 52 90.066-52V53L90.067 1 0 53z" fill="#fc0" fill-rule="evenodd"/><path d="M13.3 85.822L38.89 137l25.588-51.178L90.068 137l25.587-51.178L141.245 137l25.588-51.178" fill="none" stroke="#000" stroke-width="7.997" stroke-linecap="round" stroke-linejoin="round"/></svg> -->
+    </span>
+  </span>
+
+  <span class="report">
+    <span class="treport">
+      Push the hexagon to start and stop recognition...
+    </span>
+  </span>
+  </div>
+
+  <script src="../js/jquery.js"></script>
+  <script src="../micjs/micstreamer.js"></script>
+  <script src="../micjs/vumeter.js"></script>
+
+
+  <!-- <script src="../js/mic.js"></script> -->
+
+    <!-- <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-49900966-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script> -->
+  </body>
+</html>
