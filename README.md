@@ -2,7 +2,7 @@
 
 Verbum sat sapienti est - Smart ones do not need anything more than a word (lat.)
 
-This Latin proverb literally means that there is no need to make an extensive explanation for those who *know*. They will understand you from a simple reference to the concept you are interested in.
+This Latin proverb literally means that there is no need to make an extensive explanation for those who *know*. They will understand you from a simple reference to the concept of interest.
 
 However, we believe, that in our times the proverb could be interpreted in a way that doing a speech-interfaced application one has to be alert not to fall victim to the bundled selling of large corporations. Ideally the speech application designer has to have access to the discreet and efficient speech processing API that does its job, does it well and does not attempt to force its customer into a bunch of unrelated deals.
 
